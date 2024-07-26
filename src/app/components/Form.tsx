@@ -1,5 +1,4 @@
 "use client";
-// src/components/Form.tsx
 import React, { useState, FormEvent } from "react";
 import "./Form.css";
 import { Transaction } from "../types/types";
@@ -12,7 +11,7 @@ const Form: React.FC<FormProps> = ({ onAddTransaction }) => {
   const [item, setItem] = useState("");
   const [amount, setAmount] = useState("");
   const [date, setDate] = useState("");
-  const [type, setType] = useState<"income" | "expense">("income"); // Explicitly setting the type here
+  const [type, setType] = useState<"income" | "expense">("income");
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
@@ -48,7 +47,6 @@ const Form: React.FC<FormProps> = ({ onAddTransaction }) => {
           onChange={(e) => setType(e.target.value as "income" | "expense")}
         >
           {" "}
-          // Type assertion here
           <option className="income-btn" value="income">
             Income
           </option>
