@@ -1,0 +1,36 @@
+.form {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: cornflowerblue;
+}
+
+.form-box {
+  display: flex;
+  flex-direction: column;
+  padding: 15px;
+}
+.form-box label {
+  font-size: 12px;
+  color: #fff;
+}
+.form-box input {
+  border-radius: 5px;
+  color: #3b578c;
+  padding: 5px 10px;
+  width: 150px;
+  height: 40px;
+}
+.form-box button {
+  color: #fff;
+  border: 2px solid #fff;
+  background-color: #3b578c;
+  border-radius: 5px;
+  padding: 5px;
+  height: 40px;
+  margin-top: 18px;
+}
+.form-box button:hover {
+  background-color: #fff;
+  color: #3b578c;
+}/*# sourceMappingURL=Form.css.map */
