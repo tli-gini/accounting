@@ -1,7 +1,7 @@
 "use client";
 import React from "react";
 import "./List.css";
-import { Transaction } from "../app/types/types";
+import { Transaction } from "../types/types";
 
 interface ListProps {
   transactions: Transaction[];

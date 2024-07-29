@@ -1,7 +1,7 @@
 "use client";
 import React, { useState, FormEvent } from "react";
 import "./Form.css";
-import { Transaction } from "../app/types/types";
+import { Transaction } from "../types/types";
 
 interface FormProps {
   onAddTransaction: (transaction: Transaction) => void;

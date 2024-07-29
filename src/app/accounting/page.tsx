@@ -4,7 +4,7 @@ import "./page.css";
 import Form from "../../components/Form";
 import List from "../../components/List";
 import Balance from "../../components/Balance";
-import { Transaction } from "../types/types";
+import { Transaction } from "../../types/types";
 import Link from "next/link";
 
 const AccountingPage: React.FC = () => {
