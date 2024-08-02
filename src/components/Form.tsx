@@ -16,7 +16,7 @@ const Form: React.FC<FormProps> = ({ onAddTransaction }) => {
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
     onAddTransaction({
-      id: Date.now(),
+      id: Date.now().toString(), // id to string
       item,
       amount: parseInt(amount, 10),
       date,
@@ -46,7 +46,6 @@ const Form: React.FC<FormProps> = ({ onAddTransaction }) => {
           }}
           onChange={(e) => setType(e.target.value as "income" | "expense")}
         >
-          {" "}
           <option className="income-btn" value="income">
             Income
           </option>

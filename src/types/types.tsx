@@ -1,6 +1,5 @@
-// src/types/types.ts
 export interface Transaction {
-  id: number;
+  id: string; // Changed from number to string
   item: string;
   amount: number;
   date: string;

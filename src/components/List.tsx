@@ -5,7 +5,7 @@ import { Transaction } from "../types/types";
 
 interface ListProps {
   transactions: Transaction[];
-  onDelete: (id: number) => void;
+  onDelete: (id: string) => void; // Updated to string
 }
 
 const List: React.FC<ListProps> = ({ transactions, onDelete }) => {

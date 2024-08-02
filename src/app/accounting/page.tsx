@@ -1,23 +1,105 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./page.css";
 import Form from "../../components/Form";
 import List from "../../components/List";
 import Balance from "../../components/Balance";
 import { Transaction } from "../../types/types";
-import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useAuthContext } from "@/context/AuthContext";
+import { getAuth } from "firebase/auth";
+import getDocuments from "../../firebase/firestore/getData";
+import addData from "../../firebase/firestore/addData";
+import deleteData from "../../firebase/firestore/deleteData";
 
 const AccountingPage: React.FC = () => {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const [email, setEmail] = useState<string | null>(null);
+  const router = useRouter();
+  const { user, loading } = useAuthContext();
 
-  const handleAddTransaction = (transaction: Transaction) => {
-    setTransactions((prevTransactions) => [...prevTransactions, transaction]);
+  // logout
+  const logout = () => {
+    const auth = getAuth();
+    auth
+      .signOut()
+      .then(() => {
+        console.log("User signed out.");
+        sessionStorage.clear();
+        router.push("/");
+      })
+      .catch((error) => {
+        console.error("Error signing out: ", error);
+      });
   };
 
-  const handleDeleteTransaction = (id: number) => {
-    setTransactions((prevTransactions) =>
-      prevTransactions.filter((t) => t.id !== id)
-    );
+  useEffect(() => {
+    const fetchTransactions = async () => {
+      if (loading) return;
+      if (!user) {
+        console.log("User not authenticated, redirecting to home");
+        router.push("/");
+        return;
+      }
+
+      const storedEmail = sessionStorage.getItem("email");
+      setEmail(storedEmail);
+
+      if (storedEmail) {
+        const { result, error } = await getDocuments(
+          "transactions",
+          storedEmail
+        );
+        if (result) {
+          setTransactions(result);
+        } else {
+          console.error("Failed to fetch transactions:", error);
+        }
+      }
+    };
+
+    if (!loading) {
+      fetchTransactions();
+    }
+  }, [user, loading, router]);
+
+  // Prevent rendering
+  if (loading || !user) {
+    return null;
+  }
+
+  const handleAddTransaction = async (transaction: Transaction) => {
+    if (email) {
+      const dataWithUserEmail = { ...transaction, email };
+      const { result, error } = await addData(
+        "transactions",
+        dataWithUserEmail
+      );
+      if (result) {
+        setTransactions((prevTransactions) => [
+          ...prevTransactions,
+          { ...transaction, id: result.id }, // Ensure id is string
+        ]);
+      } else {
+        console.error("Failed to add transaction:", error);
+      }
+    }
+  };
+
+  const handleDeleteTransaction = async (id: string) => {
+    // Ensure id is string
+    try {
+      const { result, error } = await deleteData("transactions", id);
+      if (result) {
+        setTransactions((prevTransactions) =>
+          prevTransactions.filter((t) => t.id !== id)
+        );
+      } else {
+        console.error("Failed to delete transaction:", error);
+      }
+    } catch (error) {
+      console.error("Error deleting transaction:", error);
+    }
   };
 
   const totalIncome = transactions
@@ -32,7 +114,9 @@ const AccountingPage: React.FC = () => {
 
   return (
     <main className="accounting-container">
-      <h1 className="title">- Track My Spending -</h1>
+      <h1 className="title">
+        You have logged in using <span className="email-span">{email}</span>
+      </h1>
       <div className="wrapper">
         <Form onAddTransaction={handleAddTransaction} />
         <List transactions={transactions} onDelete={handleDeleteTransaction} />
@@ -43,9 +127,9 @@ const AccountingPage: React.FC = () => {
         expense={totalExpense}
       />
       <div className="btn-to-home-div">
-        <Link className="btn-to-home" href="/">
-          Back to HomePage
-        </Link>
+        <button className="btn-to-home" onClick={logout}>
+          Log Out
+        </button>
       </div>
     </main>
   );
