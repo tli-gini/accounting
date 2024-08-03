@@ -64,6 +64,18 @@ const AccountingPage: React.FC = () => {
       });
   };
 
+  const refreshTransactions = async () => {
+    if (email) {
+      const { result, error } = await getDocuments("transactions", email);
+      if (result) {
+        setTransactions(result);
+        console.log(`Refreshed for ${email}`);
+      } else {
+        console.error("Failed to refresh:", error);
+      }
+    }
+  };
+
   if (loading || !user) {
     router.push("/");
   }
@@ -76,31 +88,29 @@ const AccountingPage: React.FC = () => {
         dataWithUserEmail
       );
       if (result) {
-        setTransactions((prevTransactions) => [
-          ...prevTransactions,
-          { ...transaction, id: result.id },
-        ]);
+        console.log("Transaction added successfully:", result);
+        await refreshTransactions(); // Refresh after adding
       } else {
         console.error("Failed to add transaction:", error);
       }
+    } else {
+      console.error("Cannot add transaction.");
     }
   };
 
   const handleDeleteTransaction = async (id: string) => {
     setIsDeleting(true);
     try {
-      console.log(`deleting...: ${id}`);
+      console.log(`Deleting transaction with id: ${id}`);
       const { result, error } = await deleteData("transactions", id, email);
       if (result) {
-        console.log(`Successfully deleted id: ${id}`);
-        setTransactions((prevTransactions) =>
-          prevTransactions.filter((t) => t.id !== id)
-        );
+        console.log(`Successfully deleted transaction with id: ${id}`);
+        await refreshTransactions(); // Refresh after deleting
       } else {
         console.error(`Failed to delete id: ${id}`, error);
       }
     } catch (error) {
-      console.error(`Error in id: ${id}`, error);
+      console.error(`Error in handleDeleteTransaction for id: ${id}`, error);
     } finally {
       setIsDeleting(false);
     }
