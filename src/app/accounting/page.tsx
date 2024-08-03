@@ -37,13 +37,14 @@ const AccountingPage: React.FC = () => {
         );
         if (result) {
           setTransactions(result);
+          console.log(`Fetched transactions for ${storedEmail}`);
         } else {
           console.error("Failed to fetch transactions:", error);
         }
       }
     };
 
-    if (!loading && user) {
+    if (!loading) {
       fetchTransactions();
     }
   }, [user, loading, router]);
@@ -63,9 +64,8 @@ const AccountingPage: React.FC = () => {
       });
   };
 
-  // Ensure all hooks are called at the top level of your component
   if (loading || !user) {
-    return <div className="loading">Loading...</div>; // Render a loading or placeholder element instead of null
+    router.push("/");
   }
 
   const handleAddTransaction = async (transaction: Transaction) => {
@@ -78,7 +78,7 @@ const AccountingPage: React.FC = () => {
       if (result) {
         setTransactions((prevTransactions) => [
           ...prevTransactions,
-          { ...transaction, id: result.id }, // Ensure id is string
+          { ...transaction, id: result.id },
         ]);
       } else {
         console.error("Failed to add transaction:", error);
@@ -89,16 +89,18 @@ const AccountingPage: React.FC = () => {
   const handleDeleteTransaction = async (id: string) => {
     setIsDeleting(true);
     try {
-      const { result, error } = await deleteData("transactions", id);
+      console.log(`deleting...: ${id}`);
+      const { result, error } = await deleteData("transactions", id, email);
       if (result) {
+        console.log(`Successfully deleted id: ${id}`);
         setTransactions((prevTransactions) =>
           prevTransactions.filter((t) => t.id !== id)
         );
       } else {
-        console.error("Failed to delete transaction:", error);
+        console.error(`Failed to delete id: ${id}`, error);
       }
     } catch (error) {
-      console.error("Error deleting transaction:", error);
+      console.error(`Error in id: ${id}`, error);
     } finally {
       setIsDeleting(false);
     }
