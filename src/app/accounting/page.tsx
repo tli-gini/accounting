@@ -64,6 +64,10 @@ const AccountingPage: React.FC = () => {
       });
   };
 
+  if (loading || !user) {
+    router.push("/");
+  }
+
   const refreshTransactions = async () => {
     if (email) {
       const { result, error } = await getDocuments("transactions", email);
@@ -75,10 +79,6 @@ const AccountingPage: React.FC = () => {
       }
     }
   };
-
-  if (loading || !user) {
-    router.push("/");
-  }
 
   const handleAddTransaction = async (transaction: Transaction) => {
     if (email) {
