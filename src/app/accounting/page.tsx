@@ -65,7 +65,7 @@ const AccountingPage: React.FC = () => {
 
   // Ensure all hooks are called at the top level of your component
   if (loading || !user) {
-    return <div>Loading...</div>; // Render a loading or placeholder element instead of null
+    return <div className="loading">Loading...</div>; // Render a loading or placeholder element instead of null
   }
 
   const handleAddTransaction = async (transaction: Transaction) => {
@@ -122,7 +122,6 @@ const AccountingPage: React.FC = () => {
         <List transactions={transactions} onDelete={handleDeleteTransaction} />
       </div>
       {isDeleting && <div className="loading">Deleting...</div>}
-      {/* Rest of your component */}
       <Balance
         balance={totalBalance}
         income={totalIncome}
