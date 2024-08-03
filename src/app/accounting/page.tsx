@@ -20,6 +20,11 @@ const AccountingPage: React.FC = () => {
   const [isDeleting, setIsDeleting] = useState(false);
 
   useEffect(() => {
+    if (loading || !user) {
+      router.push("/");
+      return;
+    }
+
     const fetchTransactions = async () => {
       if (!user) {
         console.log("User not authenticated, redirecting to home");
@@ -63,10 +68,6 @@ const AccountingPage: React.FC = () => {
         console.error("Error signing out: ", error);
       });
   };
-
-  if (loading || !user) {
-    router.push("/");
-  }
 
   const refreshTransactions = async () => {
     if (email) {
