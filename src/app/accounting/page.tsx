@@ -17,25 +17,10 @@ const AccountingPage: React.FC = () => {
   const [email, setEmail] = useState<string | null>(null);
   const router = useRouter();
   const { user, loading } = useAuthContext();
-
-  // logout
-  const logout = () => {
-    const auth = getAuth();
-    auth
-      .signOut()
-      .then(() => {
-        console.log("User signed out.");
-        sessionStorage.clear();
-        router.push("/");
-      })
-      .catch((error) => {
-        console.error("Error signing out: ", error);
-      });
-  };
+  const [isDeleting, setIsDeleting] = useState(false);
 
   useEffect(() => {
     const fetchTransactions = async () => {
-      if (loading) return;
       if (!user) {
         console.log("User not authenticated, redirecting to home");
         router.push("/");
@@ -58,14 +43,29 @@ const AccountingPage: React.FC = () => {
       }
     };
 
-    if (!loading) {
+    if (!loading && user) {
       fetchTransactions();
     }
   }, [user, loading, router]);
 
-  // Prevent rendering
+  // Handle user logout
+  const logout = () => {
+    const auth = getAuth();
+    auth
+      .signOut()
+      .then(() => {
+        console.log("User signed out.");
+        sessionStorage.clear();
+        router.push("/");
+      })
+      .catch((error) => {
+        console.error("Error signing out: ", error);
+      });
+  };
+
+  // Ensure all hooks are called at the top level of your component
   if (loading || !user) {
-    return null;
+    return <div>Loading...</div>; // Render a loading or placeholder element instead of null
   }
 
   const handleAddTransaction = async (transaction: Transaction) => {
@@ -87,7 +87,7 @@ const AccountingPage: React.FC = () => {
   };
 
   const handleDeleteTransaction = async (id: string) => {
-    // Ensure id is string
+    setIsDeleting(true);
     try {
       const { result, error } = await deleteData("transactions", id);
       if (result) {
@@ -99,17 +99,17 @@ const AccountingPage: React.FC = () => {
       }
     } catch (error) {
       console.error("Error deleting transaction:", error);
+    } finally {
+      setIsDeleting(false);
     }
   };
 
   const totalIncome = transactions
     .filter((t) => t.type === "income")
     .reduce((sum, record) => sum + record.amount, 0);
-
   const totalExpense = transactions
     .filter((t) => t.type === "expense")
     .reduce((sum, record) => sum + record.amount, 0);
-
   const totalBalance = totalIncome - totalExpense;
 
   return (
@@ -121,6 +121,8 @@ const AccountingPage: React.FC = () => {
         <Form onAddTransaction={handleAddTransaction} />
         <List transactions={transactions} onDelete={handleDeleteTransaction} />
       </div>
+      {isDeleting && <div className="loading">Deleting...</div>}
+      {/* Rest of your component */}
       <Balance
         balance={totalBalance}
         income={totalIncome}
