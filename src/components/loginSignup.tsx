@@ -21,26 +21,34 @@ const LoginSignup = () => {
     event.preventDefault();
 
     if (action === "Sign Up") {
-      // Sign Up logic
+      // --- Sign Up Logic (New User) ---
       const { result, error } = await signUp(email, password);
+
       if (result) {
-        console.log(result);
-        setSuccess("Sign up successful. Please log in to continue.");
+        console.log("Sign up success:", result);
+        // Auto-login logic: save email to session immediately
+        sessionStorage.setItem("email", email);
+
+        // Redirect to Settings to setup 2FA
+        router.push("/settings");
       } else {
         console.log(error);
         setError("Failed to sign up. Please try again.");
       }
     } else if (action === "Login") {
-      // Login logic
+      // --- Login Logic (Returning User) ---
       const { result, error } = await signin(email, password);
+
       if (result) {
-        console.log(result);
+        console.log("Login success:", result);
         sessionStorage.setItem("email", email);
+
         if (!loading) {
-          router.push("/accounting");
+          // Redirect to 2FA Verification page
+          router.push("/verify-2fa");
         }
       } else {
-        setError("Failed to login. Please try again.");
+        setError("Failed to login. Please check your email or password.");
         console.log(error);
       }
     }

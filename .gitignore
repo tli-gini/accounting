@@ -41,3 +41,7 @@ venv.bak/
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# generated CSS files
+*.css
+*.css.map
